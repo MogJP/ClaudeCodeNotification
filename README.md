@@ -208,40 +208,6 @@ ClaudeCodeNotification/
 
 ---
 
-## 💻 開発者向け情報
-
-### 🎯 Setup.exe の作成方法
-
-GitHub Releasesで配布するSetup.exeを作成したい場合：
-
-### 📋 必要な環境
-- **NSIS** (インストーラー作成ツール): https://nsis.sourceforge.io/
-- **Node.js** 18以上: https://nodejs.org/
-- **Python** 3.9以上
-
-### 🚀 Setup.exe作成手順
-```bash
-# 1. リポジトリをクローン
-git clone https://github.com/MogJP/ClaudeCodeNotification.git
-cd ClaudeCodeNotification
-
-# 2. インストーラー作成（Electronアプリも自動ビルド）
-cd installer
-build-installer.bat
-
-# 3. 完成！
-# builds/ClaudeCodeNotifier-Setup.exe が作成されます
-```
-
-> 💡 **ポイント**: `build-installer.bat` が自動で以下を実行します：
-> - Node.js環境確認
-> - npm install（必要に応じて）  
-> - Electronアプリのビルド
-> - NSISインストーラー作成
-
-### 📦 配布方法
-1. `builds/ClaudeCodeNotifier-Setup.exe` をGitHub Releasesにアップロード
-2. ユーザーはSetup.exeのみダウンロード→インストール
 
 ## 📄 ライセンス
 
@@ -252,16 +218,6 @@ build-installer.bat
 - ❌ 再配布: 事前許可が必要
 
 商用利用や再配布をご希望の場合は [GitHub Issues](../../issues) でお問い合わせください。
-
-## 🤝 コントリビューション
-
-貢献は大歓迎です！以下の手順でお願いします：
-
-1. リポジトリをフォーク
-2. 機能ブランチを作成 (`git checkout -b feature/amazing-feature`)
-3. 変更をコミット (`git commit -m 'Add amazing feature'`)
-4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
-5. プルリクエストを作成
 
 ## 🆘 サポート
 
