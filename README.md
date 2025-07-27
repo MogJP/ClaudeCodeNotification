@@ -222,8 +222,8 @@ ClaudeCodeNotification/
 ## 🆘 サポート
 
 - **バグ報告**: [GitHub Issues](../../issues)
-- **機能要望**: [GitHub Discussions](../../discussions)
-- **質問**: [GitHub Discussions](../../discussions)
+- **機能要望**: [GitHub Issues](../../issues)
+- **質問**: [GitHub Issues](../../issues)
 
 ---
 
