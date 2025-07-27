@@ -1,19 +1,18 @@
 @echo off
-chcp 65001 >nul
 setlocal EnableDelayedExpansion
 
 echo ===============================================
-echo Claude Code Notifier ƒCƒ“ƒXƒg[ƒ‰[ì¬
+echo Claude Code Notifier Installer Build
 echo ===============================================
 echo.
 
-:: ŠÂ‹«Šm”F
-echo [1/4] ŠÂ‹«Šm”F’†...
+:: Environment Check
+echo [1/6] Checking environment...
 
-:: NSIS ‚ÌŠm”F
-echo NSIS‚ğŒŸõ’†...
+:: NSIS Detection
+echo Searching for NSIS...
 
-:: ˆê”Ê“I‚ÈƒCƒ“ƒXƒg[ƒ‹êŠ‚ğŠm”F
+:: Check common installation locations
 set "NSIS_PATH="
 if exist "C:\Program Files (x86)\NSIS\makensis.exe" (
     set "NSIS_PATH=C:\Program Files (x86)\NSIS\makensis.exe"
@@ -31,7 +30,7 @@ if exist "C:\Program Files (x86)\NSIS\makensis.exe" (
     )
 )
 
-:: PATH‚©‚çŒŸõ
+:: Search in PATH
 if "%NSIS_PATH%"=="" (
     where makensis >nul 2>&1
     if not errorlevel 1 (
@@ -39,143 +38,143 @@ if "%NSIS_PATH%"=="" (
     )
 )
 
-:: Œ©‚Â‚©‚ç‚È‚¢ê‡‚Íè“®“ü—Í
+:: Manual input if not found
 if "%NSIS_PATH%"=="" (
     echo.
     echo ===============================================
-    echo NSIS ‚ª©“®ŒŸo‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½
+    echo NSIS not found automatically
     echo ===============================================
     echo.
-    echo NSIS ‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚Ä‚¢‚È‚¢ê‡:
-    echo https://nsis.sourceforge.io/ ‚©‚çƒ_ƒEƒ“ƒ[ƒh‚µ‚Ä‚­‚¾‚³‚¢
+    echo If NSIS is not installed:
+    echo Download from https://nsis.sourceforge.io/
     echo.
-    echo Šù‚ÉƒCƒ“ƒXƒg[ƒ‹Ï‚İ‚Ìê‡:
-    echo makensis.exe ‚Ìƒtƒ‹ƒpƒX‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢
-    echo —á: C:\Tools\NSIS\makensis.exe
+    echo If already installed:
+    echo Enter full path to makensis.exe
+    echo Example: C:\Tools\NSIS\makensis.exe
     echo.
-    set /p "NSIS_PATH=makensis.exe ‚ÌƒpƒX (‚Ü‚½‚ÍEnter‚ÅƒXƒLƒbƒv): "
+    set /p "NSIS_PATH=Path to makensis.exe (or Enter to skip): "
     
     if "%NSIS_PATH%"=="" (
-        echo NSIS‚È‚µ‚Å‚ÍƒCƒ“ƒXƒg[ƒ‰[‚ğì¬‚Å‚«‚Ü‚¹‚ñ
+        echo Cannot create installer without NSIS
         pause
         exit /b 1
     )
     
     if not exist "%NSIS_PATH%" (
-        echo ƒGƒ‰[: w’è‚³‚ê‚½ƒpƒX‚Émakensis.exe‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ
+        echo Error: makensis.exe not found at specified path
         pause
         exit /b 1
     )
 )
 
-echo NSIS ‚ªŒ©‚Â‚©‚è‚Ü‚µ‚½: %NSIS_PATH%
+echo NSIS found: %NSIS_PATH%
 
-:: ƒvƒƒWƒFƒNƒgƒ‹[ƒg‚ÉˆÚ“®
+:: Move to project root
 cd /d "%~dp0"
 cd ..
 
-echo [2/4] buildsƒtƒHƒ‹ƒ_ì¬...
+echo [2/6] Creating builds folder...
 
-:: buildsƒtƒHƒ‹ƒ_ì¬
+:: Create builds folder
 if not exist "builds" mkdir "builds"
 
-echo [3/6] ƒtƒ@ƒCƒ‹Šm”F...
+echo [3/6] File verification...
 
-:: •K—v‚Èƒtƒ@ƒCƒ‹‚ÌŠm”F
+:: Check required files
 if not exist "src\notify.py" (
-    echo ƒGƒ‰[: src\notify.py ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ
+    echo Error: src\notify.py not found
     pause
     exit /b 1
 )
 
-echo [4/6] Node.jsŠÂ‹«Šm”F...
+echo [4/6] Node.js environment check...
 
-:: Node.jsŠÂ‹«‚ÌŠm”F
+:: Node.js environment check
 where node >nul 2>&1
 if errorlevel 1 (
-    echo ƒGƒ‰[: Node.js ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ
-    echo Node.js ‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚Ä‚­‚¾‚³‚¢: https://nodejs.org/
+    echo Error: Node.js not found
+    echo Please install Node.js: https://nodejs.org/
     pause
     exit /b 1
 )
 
-echo Node.js ‚ªŒ©‚Â‚©‚è‚Ü‚µ‚½
+echo Node.js found
 node --version
 
-echo [5/6] ElectronƒAƒvƒŠ‚ÌŠm”FEƒrƒ‹ƒh...
+echo [5/6] Electron app check and build...
 
-:: ElectronƒAƒvƒŠ‚Ì‘¶İŠm”F
-if not exist "settings-app\dist\win-unpacked\Claude’Ê’mİ’è.exe" (
-    echo ElectronƒAƒvƒŠ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB©“®‚Åƒrƒ‹ƒh‚µ‚Ü‚·...
+:: Electron app existence check
+if not exist "settings-app\dist\win-unpacked\Claudeé€šçŸ¥è¨­å®š.exe" (
+    echo Electron app not found. Building automatically...
     
-    :: settings-appƒfƒBƒŒƒNƒgƒŠ‚ÉˆÚ“®
+    :: Move to settings-app directory
     cd settings-app
     
-    echo npmˆË‘¶ŠÖŒW‚ğŠm”F’†...
+    echo Checking npm dependencies...
     if not exist "node_modules" (
-        echo npm install ‚ğÀs’†...
+        echo Running npm install...
         npm install
         if errorlevel 1 (
-            echo ƒGƒ‰[: npm install ‚É¸”s‚µ‚Ü‚µ‚½
+            echo Error: npm install failed
             cd ..
             pause
             exit /b 1
         )
     )
     
-    echo ElectronƒAƒvƒŠ‚ğƒrƒ‹ƒh’†... (”•ª‚©‚©‚è‚Ü‚·)
+    echo Building Electron app... (this may take several minutes)
     npm run build
     if errorlevel 1 (
-        echo ƒGƒ‰[: ElectronƒAƒvƒŠ‚Ìƒrƒ‹ƒh‚É¸”s‚µ‚Ü‚µ‚½
+        echo Error: Electron app build failed
         cd ..
         pause
         exit /b 1
     )
     
-    :: Œ³‚ÌƒfƒBƒŒƒNƒgƒŠ‚É–ß‚é
+    :: Return to original directory
     cd ..
     
-    echo ElectronƒAƒvƒŠ‚Ìƒrƒ‹ƒh‚ªŠ®—¹‚µ‚Ü‚µ‚½I
+    echo Electron app build completed!
 ) else (
-    echo ElectronƒAƒvƒŠ‚ªŒ©‚Â‚©‚è‚Ü‚µ‚½
+    echo Electron app found
 )
 
-echo [6/6] ƒCƒ“ƒXƒg[ƒ‰[ì¬’†...
+echo [6/6] Creating installer...
 
-:: ƒCƒ“ƒXƒg[ƒ‰[‚ğƒrƒ‹ƒh
+:: Build installer
 cd installer
 "%NSIS_PATH%" ClaudeCodeNotifier-Simple.nsi
 if errorlevel 1 (
-    echo ƒGƒ‰[: ƒCƒ“ƒXƒg[ƒ‰[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½
+    echo Error: Installer creation failed
     pause
     exit /b 1
 )
 
 cd ..
 
-echo Š®—¹!
+echo Complete!
 
-:: ì¬‚³‚ê‚½ƒCƒ“ƒXƒg[ƒ‰[‚Ìƒtƒ@ƒCƒ‹î•ñ•\¦
+:: Display created installer file information
 if exist "builds\ClaudeCodeNotifier-Setup.exe" (
     for %%A in ("builds\ClaudeCodeNotifier-Setup.exe") do (
         set /a size=%%~zA/1024/1024
         echo.
         echo ===============================================
-        echo ƒCƒ“ƒXƒg[ƒ‰[‚ª³í‚Éì¬‚³‚ê‚Ü‚µ‚½
+        echo Installer created successfully
         echo ===============================================
-        echo ƒtƒ@ƒCƒ‹: ClaudeCodeNotifier-Setup.exe
-        echo ƒtƒ@ƒCƒ‹ƒTƒCƒY: !size! MB
-        echo êŠ: %CD%\builds\ClaudeCodeNotifier-Setup.exe
+        echo File: ClaudeCodeNotifier-Setup.exe
+        echo Size: !size! MB
+        echo Location: %CD%\builds\ClaudeCodeNotifier-Setup.exe
         echo ===============================================
     )
 ) else (
-    echo ƒGƒ‰[: ƒCƒ“ƒXƒg[ƒ‰[ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ
+    echo Error: Installer file not found
     pause
     exit /b 1
 )
 
 echo.
-echo ”z•z€”õŠ®—¹I
-echo ‚±‚ÌSetup.exe‚ğ”z•z‚·‚ê‚ÎA‘¼‚Ìƒ†[ƒU[‚ÍƒŠƒ|ƒWƒgƒŠ‚È‚µ‚ÅƒCƒ“ƒXƒg[ƒ‹‚Å‚«‚Ü‚·B
+echo Ready for distribution!
+echo Upload this Setup.exe to GitHub Releases for easy user installation.
 echo.
 pause

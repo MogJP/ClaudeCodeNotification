@@ -222,7 +222,7 @@ GitHub Releasesで配布するSetup.exeを作成したい場合：
 ### 🚀 Setup.exe作成手順
 ```bash
 # 1. リポジトリをクローン
-git clone https://github.com/your-username/ClaudeCodeNotification.git
+git clone https://github.com/MogJP/ClaudeCodeNotification.git
 cd ClaudeCodeNotification
 
 # 2. インストーラー作成（Electronアプリも自動ビルド）
