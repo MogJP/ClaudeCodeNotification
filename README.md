@@ -6,6 +6,16 @@
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-lightgrey)
 ![Python](https://img.shields.io/badge/python-3.9%2B-green)
 
+---
+
+### ☕ このプロジェクトを気に入っていただけましたか？
+
+**[☕ Buy me a coffee](https://buymeacoffee.com/mog_jp)** でサポートしていただけると嬉しいです！
+
+開発の継続・機能追加のモチベーションになります 🙏
+
+---
+
 ## ✨ 主な機能
 
 - 🔔 **自動通知**: Claude Codeの作業完了時・確認待ち時に自動でWindows通知
