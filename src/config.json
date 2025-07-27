@@ -1,0 +1,26 @@
+{
+  "notification": {
+    "duration": 10,
+    "sound": {
+      "enabled": true,
+      "file": "default",
+      "volume": 80
+    },
+    "position": "bottom-right"
+  },
+  "messages": {
+    "stop": {
+      "title": "Claude Code - 作業完了",
+      "template": "✅ {message}\n📝 {details}\n⏰ {time}"
+    },
+    "notification": {
+      "title": "Claude Code - 確認待ち",
+      "template": "❓ {message}\n📝 {details}\n⏰ {time}"
+    }
+  },
+  "advanced": {
+    "use_emoji": true,
+    "time_format": "%H:%M:%S",
+    "language": "ja"
+  }
+}

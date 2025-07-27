@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code 通知設定</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- ヘッダー -->
+    <header class="header">
+      <h1>Claude Code 通知設定</h1>
+    </header>
+
+    <!-- タブナビゲーション -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="notifications">通知・メッセージ設定</button>
+      <button class="tab-btn" data-tab="claude-integration">Claude Code連携</button>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+      <!-- 通知・メッセージ設定タブ -->
+      <div class="tab-content active" id="notifications-tab">
+        <!-- 通知設定セクション -->
+        <section class="settings-section">
+          <h2>通知設定</h2>
+        
+          <!-- 表示時間設定 -->
+          <div class="setting-item">
+            <label for="duration">表示時間</label>
+            <div class="slider-container">
+              <input type="range" id="duration" min="3" max="60" value="10" class="slider">
+              <span class="value" id="duration-value">10秒</span>
+            </div>
+          </div>
+
+          <!-- 音設定 -->
+          <div class="setting-item">
+            <label for="sound-enabled">音</label>
+            <div class="toggle-container">
+              <input type="checkbox" id="sound-enabled" class="toggle-input">
+              <label for="sound-enabled" class="toggle-label">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 音種類設定 -->
+          <div class="setting-item" id="sound-type-container">
+            <label for="sound-type">音種類</label>
+            <select id="sound-type" class="select">
+              <option value="default">Windows標準</option>
+              <option value="chime">チャイム</option>
+              <option value="bell">ベル</option>
+              <option value="none">無音</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- メッセージ設定セクション -->
+        <section class="settings-section">
+          <h2>メッセージ設定</h2>
+        
+        <!-- 作業完了メッセージ -->
+        <div class="setting-item">
+          <label for="stop-title">作業完了のタイトル</label>
+          <input type="text" id="stop-title" class="text-input" placeholder="Claude Code - 作業完了">
+        </div>
+
+        <div class="setting-item">
+          <label for="stop-template">作業完了のメッセージ</label>
+          <textarea id="stop-template" class="textarea" rows="3" placeholder="✅ {message}&#10;📝 {details}&#10;⏰ {time}"></textarea>
+          <small class="help-text">使用可能変数: {message}, {details}, {time}</small>
+        </div>
+
+        <!-- 確認待ちメッセージ -->
+        <div class="setting-item">
+          <label for="notification-title">確認待ちのタイトル</label>
+          <input type="text" id="notification-title" class="text-input" placeholder="Claude Code - 確認待ち">
+        </div>
+
+        <div class="setting-item">
+          <label for="notification-template">確認待ちのメッセージ</label>
+          <textarea id="notification-template" class="textarea" rows="3" placeholder="❓ {message}&#10;📝 {details}&#10;⏰ {time}"></textarea>
+          <small class="help-text">使用可能変数: {message}, {details}, {time}</small>
+        </div>
+        </section>
+      </div>
+
+      <!-- Claude Code連携タブ -->
+      <div class="tab-content" id="claude-integration-tab">
+        <section class="settings-section">
+          <h2>Claude Code連携</h2>
+          
+          <!-- 設定ファイル選択 -->
+          <div class="setting-item">
+            <label for="settings-file-path">設定ファイル</label>
+            <div class="file-input-container">
+              <input type="text" id="settings-file-path" class="text-input" placeholder="settings.local.json のパスを選択してください" readonly>
+              <button id="browse-settings-btn" class="btn btn-outline">参照...</button>
+            </div>
+            <small class="help-text">Claude Codeの .claude/settings.local.json を選択してください</small>
+          </div>
+
+          <!-- hooks設定 -->
+          <div class="setting-item">
+            <label>hooks設定</label>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="hook-stop" class="checkbox">
+                <label for="hook-stop">Stop イベント通知を有効化</label>
+                <small class="help-text">作業完了時に通知を表示</small>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="hook-notification" class="checkbox">
+                <label for="hook-notification">Notification イベント通知を有効化</label>
+                <small class="help-text">確認待ち時に通知を表示（Claude Codeの仕様により10秒程度の遅延があります）</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- 連携状態表示 -->
+          <div class="setting-item">
+            <label>連携状態</label>
+            <div class="status-indicator">
+              <span id="integration-status" class="status-badge">未設定</span>
+              <small id="integration-details" class="status-details">設定ファイルを選択してください</small>
+            </div>
+          </div>
+
+          <!-- 連携操作ボタン -->
+          <div class="setting-item">
+            <div class="button-group">
+              <button id="apply-integration-btn" class="btn btn-primary" disabled>🔧 連携設定を適用</button>
+              <button id="test-integration-btn" class="btn btn-secondary" disabled>🧪 連携テスト</button>
+              <button id="backup-settings-btn" class="btn btn-outline" disabled>💾 設定をバックアップ</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="footer">
+      <button id="test-btn" class="btn btn-secondary">テスト</button>
+      <button id="reset-btn" class="btn btn-outline">設定をリセット</button>
+      <button id="save-btn" class="btn btn-primary">保存</button>
+    </footer>
+
+    <!-- ステータス表示 -->
+    <div id="status" class="status hidden"></div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
