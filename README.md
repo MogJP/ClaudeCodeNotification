@@ -188,20 +188,28 @@ ClaudeCodeNotification/
 // C:\Users\[ユーザー名]\.claude\settings.local.json に追加
 {
   "hooks": {
-    "Stop": [{
-      "matcher": "",
-      "hooks": [{
-        "type": "command",
-        "command": "python \"C:\\Program Files\\ClaudeCodeNotifier\\src\\notify.py\""
-      }]
-    }],
-    "Notification": [{
-      "matcher": "",
-      "hooks": [{
-        "type": "command", 
-        "command": "python \"C:\\Program Files\\ClaudeCodeNotifier\\src\\notify.py\""
-      }]
-    }]
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "nohup /mnt/c/Windows/System32/cmd.exe /c python C:/Program Files (x86)/ClaudeCodeNotifier/settings-app/dist/win-unpacked/resources/src/notify.py Stop \"Claude Codeの作業が完了しました\" > /dev/null 2>&1 &"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "nohup /mnt/c/Windows/System32/cmd.exe /c python C:/Program Files (x86)/ClaudeCodeNotifier/settings-app/dist/win-unpacked/resources/src/notify.py Notification \"Claude Codeの確認が必要です\" > /dev/null 2>&1 &"
+          }
+        ]
+      }
+    ]
   }
 }
 ```
