@@ -1,1 +1,0 @@
-win10toast-click>=0.1.0
