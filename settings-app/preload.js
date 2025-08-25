@@ -10,8 +10,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Claude Code連携API
   openFileDialog: (options) => ipcRenderer.invoke('open-file-dialog', options),
   checkHooksStatus: (settingsPath) => ipcRenderer.invoke('check-hooks-status', settingsPath),
-  applyHooksConfig: (settingsPath, enableStop, enableNotification) => 
-    ipcRenderer.invoke('apply-hooks-config', settingsPath, enableStop, enableNotification),
+  applyHooksConfig: (settingsPath, enableStop, enableNotification, isWindowsEnvironment) => 
+    ipcRenderer.invoke('apply-hooks-config', settingsPath, enableStop, enableNotification, isWindowsEnvironment),
   testIntegration: () => ipcRenderer.invoke('test-integration'),
   backupSettings: (settingsPath) => ipcRenderer.invoke('backup-settings', settingsPath)
 });

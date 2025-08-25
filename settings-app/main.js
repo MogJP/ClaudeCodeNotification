@@ -183,10 +183,10 @@ ipcMain.handle('check-hooks-status', async (event, settingsPath) => {
 });
 
 // hooks設定適用
-ipcMain.handle('apply-hooks-config', async (event, settingsPath, enableStop, enableNotification) => {
+ipcMain.handle('apply-hooks-config', async (event, settingsPath, enableStop, enableNotification, isWindowsEnvironment) => {
   try {
     const manager = getHooksManager();
-    const result = await manager.applyHooksConfig(settingsPath, enableStop, enableNotification);
+    const result = await manager.applyHooksConfig(settingsPath, enableStop, enableNotification, isWindowsEnvironment);
     return result;
   } catch (error) {
     return { success: false, error: error.message };

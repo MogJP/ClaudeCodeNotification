@@ -34,6 +34,7 @@ class SettingsApp {
     // Claude Code連携要素
     this.elements.settingsFilePath = document.getElementById('settings-file-path');
     this.elements.browseSettingsBtn = document.getElementById('browse-settings-btn');
+    this.elements.windowsEnvironment = document.getElementById('windows-environment');
     this.elements.hookStop = document.getElementById('hook-stop');
     this.elements.hookNotification = document.getElementById('hook-notification');
     this.elements.integrationStatus = document.getElementById('integration-status');
@@ -78,6 +79,7 @@ class SettingsApp {
     // Claude Code連携イベント
     this.elements.browseSettingsBtn.addEventListener('click', () => this.browseSettingsFile());
     this.elements.settingsFilePath.addEventListener('input', () => this.onSettingsPathChange());
+    this.elements.windowsEnvironment.addEventListener('change', () => this.updateIntegrationButtons());
     this.elements.hookStop.addEventListener('change', () => this.updateIntegrationButtons());
     this.elements.hookNotification.addEventListener('change', () => this.updateIntegrationButtons());
     this.elements.applyIntegrationBtn.addEventListener('click', () => this.applyIntegration());
@@ -430,6 +432,7 @@ class SettingsApp {
       const filePath = this.elements.settingsFilePath.value.trim();
       const enableStop = this.elements.hookStop.checked;
       const enableNotification = this.elements.hookNotification.checked;
+      const isWindowsEnvironment = this.elements.windowsEnvironment.checked;
       const isRemoving = !enableStop && !enableNotification;
 
       // 連携解除の場合は確認ダイアログを表示
@@ -442,7 +445,7 @@ class SettingsApp {
       this.elements.applyIntegrationBtn.disabled = true;
       this.elements.applyIntegrationBtn.textContent = isRemoving ? '解除中...' : '設定中...';
 
-      const result = await window.electronAPI.applyHooksConfig(filePath, enableStop, enableNotification);
+      const result = await window.electronAPI.applyHooksConfig(filePath, enableStop, enableNotification, isWindowsEnvironment);
 
       if (result.success) {
         if (isRemoving) {

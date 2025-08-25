@@ -4,8 +4,23 @@ const path = require('path');
 
 class ClaudeHooksManager {
   constructor() {
-    this.scriptDir = path.dirname(__dirname);
-    this.notifyScript = path.join(this.scriptDir, 'src', 'notify.py');
+    // インストール後のパスを検出
+    // Electronアプリがpackage化されている場合はresources/src/notify.pyを使用
+    // 開発環境の場合は../src/notify.pyを使用
+    const isDev = !process.resourcesPath || process.resourcesPath.includes('node_modules');
+    
+    if (isDev) {
+      // 開発環境: settings-app/../src/notify.py
+      this.scriptDir = path.dirname(__dirname);
+      this.notifyScript = path.join(this.scriptDir, 'src', 'notify.py');
+    } else {
+      // 本番環境: インストールディレクトリの親フォルダのsrc/notify.py
+      // resources/app.asar/../../../src/notify.py
+      const installDir = path.resolve(process.resourcesPath, '..', '..', '..');
+      this.notifyScript = path.join(installDir, 'src', 'notify.py');
+    }
+    
+    console.log('Notify script path:', this.notifyScript);
   }
 
   /**
@@ -48,36 +63,72 @@ class ClaudeHooksManager {
   /**
    * hooks設定を生成
    */
-  createHooksConfig(enableStop = true, enableNotification = true) {
-    const notifyPath = this.notifyScript.replace(/\\/g, '/');
+  createHooksConfig(enableStop = true, enableNotification = true, isWindowsEnvironment = false) {
     const hooks = {};
 
-    if (enableStop) {
-      hooks.Stop = [
-        {
-          "matcher": "",
-          "hooks": [
-            {
-              "type": "command",
-              "command": `nohup /mnt/c/Windows/System32/cmd.exe /c python ${notifyPath} Stop "Claude Codeの作業が完了しました" > /dev/null 2>&1 &`
-            }
-          ]
-        }
-      ];
-    }
+    if (isWindowsEnvironment) {
+      // Windows環境用コマンド（ネイティブWindows版Claude Code用）
+      // PowerShellで非同期実行、親ウィンドウに影響しないよう設定
+      const notifyPath = this.notifyScript.replace(/\//g, '\\');
+      
+      if (enableStop) {
+        hooks.Stop = [
+          {
+            "matcher": "",
+            "hooks": [
+              {
+                "type": "command",
+                "command": `powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process -FilePath 'pythonw.exe' -ArgumentList '${notifyPath}', 'Stop', 'Claude Codeの作業が完了しました' -WindowStyle Hidden}"`
+              }
+            ]
+          }
+        ];
+      }
 
-    if (enableNotification) {
-      hooks.Notification = [
-        {
-          "matcher": "",
-          "hooks": [
-            {
-              "type": "command",
-              "command": `nohup /mnt/c/Windows/System32/cmd.exe /c python ${notifyPath} Notification "Claude Codeの確認が必要です" > /dev/null 2>&1 &`
-            }
-          ]
-        }
-      ];
+      if (enableNotification) {
+        hooks.Notification = [
+          {
+            "matcher": "",
+            "hooks": [
+              {
+                "type": "command",
+                "command": `powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process -FilePath 'pythonw.exe' -ArgumentList '${notifyPath}', 'Notification', 'Claude Codeの確認が必要です' -WindowStyle Hidden}"`
+              }
+            ]
+          }
+        ];
+      }
+    } else {
+      // WSL環境用コマンド（WSL/Linux版Claude Code用）
+      const notifyPath = this.notifyScript.replace(/\\/g, '/');
+      
+      if (enableStop) {
+        hooks.Stop = [
+          {
+            "matcher": "",
+            "hooks": [
+              {
+                "type": "command",
+                "command": `nohup /mnt/c/Windows/System32/cmd.exe /c python ${notifyPath} Stop "Claude Codeの作業が完了しました" > /dev/null 2>&1 &`
+              }
+            ]
+          }
+        ];
+      }
+
+      if (enableNotification) {
+        hooks.Notification = [
+          {
+            "matcher": "",
+            "hooks": [
+              {
+                "type": "command",
+                "command": `nohup /mnt/c/Windows/System32/cmd.exe /c python ${notifyPath} Notification "Claude Codeの確認が必要です" > /dev/null 2>&1 &`
+              }
+            ]
+          }
+        ];
+      }
     }
 
     return hooks;
@@ -185,7 +236,7 @@ class ClaudeHooksManager {
   /**
    * hooks設定を適用
    */
-  async applyHooksConfig(settingsPath, enableStop, enableNotification) {
+  async applyHooksConfig(settingsPath, enableStop, enableNotification, isWindowsEnvironment = false) {
     try {
       // バックアップ作成
       const backupResult = await this.backupSettings(settingsPath);
@@ -204,8 +255,8 @@ class ClaudeHooksManager {
         return await this.removeHooksConfig(settingsPath, loadResult.settings, backupResult.backupPath);
       }
 
-      // hooks設定作成
-      const hooksConfig = this.createHooksConfig(enableStop, enableNotification);
+      // hooks設定作成（Windows環境フラグを渡す）
+      const hooksConfig = this.createHooksConfig(enableStop, enableNotification, isWindowsEnvironment);
 
       // 設定マージ
       const mergedSettings = this.mergeSettings(loadResult.settings, hooksConfig);
@@ -216,9 +267,10 @@ class ClaudeHooksManager {
         return { success: false, error: `設定保存失敗: ${saveResult.error}` };
       }
 
+      const environmentType = isWindowsEnvironment ? 'Windows環境' : 'WSL環境';
       return { 
         success: true, 
-        message: 'hooks設定を正常に適用しました',
+        message: `hooks設定を正常に適用しました (${environmentType})`,
         backupPath: backupResult.backupPath 
       };
     } catch (error) {
