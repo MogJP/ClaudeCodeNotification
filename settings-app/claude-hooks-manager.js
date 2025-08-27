@@ -14,9 +14,10 @@ class ClaudeHooksManager {
       this.scriptDir = path.dirname(__dirname);
       this.notifyScript = path.join(this.scriptDir, 'src', 'notify.py');
     } else {
-      // 本番環境: インストールディレクトリの親フォルダのsrc/notify.py
-      // resources/app.asar/../../../src/notify.py
-      const installDir = path.resolve(process.resourcesPath, '..', '..', '..');
+      // 本番環境: インストールディレクトリのsrc/notify.py
+      // Electronアプリは settings-app/dist/win-unpacked にあるので
+      // 4階層上がってインストールディレクトリに到達
+      const installDir = path.resolve(process.resourcesPath, '..', '..', '..', '..');
       this.notifyScript = path.join(installDir, 'src', 'notify.py');
     }
     
@@ -78,7 +79,7 @@ class ClaudeHooksManager {
             "hooks": [
               {
                 "type": "command",
-                "command": `powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process -FilePath 'pythonw.exe' -ArgumentList '${notifyPath}', 'Stop', 'Claude Codeの作業が完了しました' -WindowStyle Hidden}"`
+                "command": `powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process -FilePath 'pythonw.exe' -ArgumentList '\\"${notifyPath}\\"', 'Stop', 'Claude Codeの作業が完了しました' -WindowStyle Hidden}"`
               }
             ]
           }
@@ -92,7 +93,7 @@ class ClaudeHooksManager {
             "hooks": [
               {
                 "type": "command",
-                "command": `powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process -FilePath 'pythonw.exe' -ArgumentList '${notifyPath}', 'Notification', 'Claude Codeの確認が必要です' -WindowStyle Hidden}"`
+                "command": `powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process -FilePath 'pythonw.exe' -ArgumentList '\\"${notifyPath}\\"', 'Notification', 'Claude Codeの確認が必要です' -WindowStyle Hidden}"`
               }
             ]
           }
